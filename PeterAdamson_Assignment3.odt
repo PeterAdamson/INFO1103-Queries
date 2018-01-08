@@ -1,0 +1,69 @@
+1)SELECT DISTINCT s.sname
+FROM Student s, Class c, Enrolled e, Teacher t
+WHERE s.snum = e.snum
+AND c.name = e.cname
+AND c.tid = t.tid
+AND t.tname = 'X'
+AND s.level = 'SR';
+
+2)SELECT s.sname, s.age
+FROM Student s, Class c, Enrolled e, Teacher t
+WHERE((s.snum = e.snum 
+	AND e.cname = c.name
+	AND c.tid = t.tid
+	AND t.tname = 'Y')
+	OR(s.major = 'History'))
+	AND s.age IN(SELECT MAX(age)
+			FROM Student);
+
+3)SELECT c.name
+FROM Class c, Enrolled e
+WHERE c.name = e.cname
+	AND e.snum IN(SELECT COUNT(snum)
+				FROM Enrolled
+				HAVING COUNT(snum) > = 5)
+	OR c.room = 'R128';
+
+4)SELECT DISTINCT  s.sname
+FROM Class c1, Class c2, Student s, Enrolled e
+WHERE c1.classTime = c2.classTime 
+	AND s.snum = e.snum
+	AND e.cname = c1.name
+	AND e.cname = c2.name;
+
+5)SELECT DISTINCT t.tname
+FROM Teacher t
+WHERE NOT EXISTS((SELECT *
+				FROM Class c)
+				EXCEPT
+				(SELECT c1.room
+				FROM Class c1
+				WHERE c1.tid = t.tid));
+
+6)SELECT DISTINCT t.tname
+FROM Teacher t, Class c, Enrolled e
+WHERE t.tid = c.cid
+AND e.cname = c.name
+GROUP BY t.tname
+HAVING COUNT(e.snum) < 5;
+
+7)SELECT level, AVG(age)
+FROM Student
+GROUP BY level;
+
+8)SELECT level, AVG(age)
+FROM Student
+WHERE level != 'JR'
+GROUP BY level;
+
+9)SELECT DISTINCT s.sname
+FROM Student s, Enrolled e
+WHERE s.snum = e.snum
+AND ALL(Select e.cname, c.name
+		FROM Enrolled e, Class c
+		WHERE c.name = e.cname);
+
+10)SELECT DISTINCT sname
+FROM Student 
+WHERE snum NOT IN (SELECT snum
+				FROM Enrolled);
